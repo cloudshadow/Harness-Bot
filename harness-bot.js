@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Harness bot
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.1.2
 // @description  make harness better
 // @author       cloud.he
 // @match        https://app.harness.io/*
