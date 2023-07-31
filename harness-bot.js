@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Harness bot
 // @namespace    http://tampermonkey.net/
-// @version      0.1.2
+// @version      0.2.0
 // @description  make harness better
 // @author       cloud.he
 // @match        https://app.harness.io/*
@@ -14,18 +14,44 @@
  * How to use
  * 1. download extension from https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?utm_source=ext_sidebar&hl=en-US
  * 2. download harness bot from https://greasyfork.org/en/scripts/472110-harness-bot
- * 3. edit 'environments' and 'servicesName' this 2 variable in harness bot script
+ * 3. edit argsByEnv object in harness bot script
  * 4. reload harness page
  * 5. input version like 0.0.666
  */
 
 (function() {
   'use strict';
-  const environments = ['']
-  const servicesName = [''];
-  const dryRun = 'false';
-  const verify = 'false';
+  const argsByEnv ={
+    // for deploy services to test
+    'test':{
+      configRepoBranch:'master',
+      dryRun:'false',
+      verify:'false',
+      gchat:'',
+      environments:[''],
+      servicesName:['']
+    },
+    // for deploy services to prod
+    'prod':{
+      configRepoBranch:'master',
+      dryRun:'false',
+      verify:'false',
+      gchat:'',
+      environments:[''],
+      servicesName:['']
+    },
+    // for deploy services to preprod
+    'preprod':{
+      configRepoBranch:'master',
+      dryRun:'false',
+      verify:'false',
+      gchat:'',
+      environments:[''],
+      servicesName:['']
+    }
+  }
   let version = '';
+  let pipelineEnv = '';
   const simulateKeyPress = (keyCode) => {
     const eventParams = {
       key: String.fromCharCode(keyCode),
@@ -52,16 +78,22 @@
     }
   }
   const fillValue = () =>{
+    const configRepoBranchInput = document.getElementsByName("template.templateInputs.stages[0].stage.variables[0].value")[1];
+    setNativeValue(configRepoBranchInput,argsByEnv[pipelineEnv].configRepoBranch);
+    configRepoBranchInput.dispatchEvent(new Event('input', { bubbles: true }));
     const dryRunInput = document.getElementsByName("template.templateInputs.stages[0].stage.variables[1].value")[1];
-    setNativeValue(dryRunInput,dryRun);
+    setNativeValue(dryRunInput,argsByEnv[pipelineEnv].dryRun);
     dryRunInput.dispatchEvent(new Event('input', { bubbles: true }));
     const verifyInput = document.getElementsByName("template.templateInputs.stages[0].stage.variables[2].value")[1];
-    setNativeValue(verifyInput,verify);
+    setNativeValue(verifyInput,argsByEnv[pipelineEnv].verify);
     verifyInput.dispatchEvent(new Event('input', { bubbles: true }));
+    const gchatInput = document.getElementsByName("template.templateInputs.stages[0].stage.variables[4].value")[1];
+    setNativeValue(gchatInput,argsByEnv[pipelineEnv].gchat);
+    gchatInput.dispatchEvent(new Event('input', { bubbles: true }));
     document.querySelector("[data-testid=multi-select-dropdown-button]").click();
     const runMultiSelectCheck = setInterval(()=>{
       if(document.getElementsByClassName('bp3-popover bp3-minimal MultiSelectDropDown--popover').length>0){
-        environments.forEach(env => Array.from(document.getElementsByTagName('label')).forEach(select => {
+        argsByEnv[pipelineEnv].environments.forEach(env => Array.from(document.getElementsByTagName('label')).forEach(select => {
           if(select.innerHTML.includes(env) && !select.className.includes('MultiSelectDropDown--active')){
             select.click()
           }
@@ -74,7 +106,7 @@
     document.getElementsByClassName("StyledProps--font StyledProps--main bp3-input QsSxrd u1WpZT StyledProps--border StyledProps--padding-xsmall")[0].firstChild.firstChild.click();
     const runServicesCheck = setInterval(()=>{
       if(document.getElementsByClassName('Collapse--main').length > 0){
-        servicesName.forEach(serviceName => {
+        argsByEnv[pipelineEnv].servicesName.forEach(serviceName => {
           Array.from(document.getElementsByClassName('Collapse--main')).filter(
             service => serviceName === service.innerText.split('Id: ')[1]
           ).forEach(selectService => {
@@ -140,6 +172,15 @@
                   fillInput.setAttribute('style','height:32px; width: 120px;');
                   fillInput.setAttribute('name','template.templateInputs.stages[0].stage.spec.services.values[0].serviceInputs.serviceDefinition.spec.manifests[0].manifest.spec.chartVersion');
                   fillContainer.prepend(fillInput);
+                  if(window.location.pathname.includes('to_test')){
+                    pipelineEnv='test'
+                  }else if(window.location.pathname.includes('to_prod')){
+                    pipelineEnv='prod'
+                  }else if(window.location.pathname.includes('to_preprod')){
+                    pipelineEnv='preprod'
+                  }else{
+                    pipelineEnv='test'
+                  }
                 }
                 clearInterval(runInputCheck);
               }
