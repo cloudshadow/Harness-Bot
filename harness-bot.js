@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Harness bot
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.1.1
 // @description  make harness better
 // @author       cloud.he
 // @match        https://app.harness.io/*
@@ -13,12 +13,10 @@
 /**
  * How to use
  * 1. download extension from https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?utm_source=ext_sidebar&hl=en-US
- * 2. click Tampermonkey icon and select Create a new script
- * 3. copy and paste this file (includes comments)
- * 4. change servicesName(which one you want to deploy)
- * 5. ctrl(command) + s to save script.
- * 6. reload harness page
- * 7. input version like 0.0.666
+ * 2. download harness bot from https://greasyfork.org/en/scripts/472110-harness-bot
+ * 3. edit 'environments' and 'servicesName' this 2 variable in harness bot script
+ * 4. reload harness page
+ * 5. input version like 0.0.666
  */
 
 (function() {
@@ -106,7 +104,6 @@
   }
   let harnessBot = () => {
     const run = (url) => {
-      // insert your code here
       const runButtonCheck = setInterval(()=>{
         if(document.querySelector('[data-testid="card-run-pipeline"]')){
           document.querySelector('[data-testid="card-run-pipeline"]').addEventListener("click", ()=>{
@@ -119,7 +116,6 @@
                   const fillContainer = document.createElement("div");
                   fillContainer.setAttribute('id','iherb-fill-container');
                   document.getElementsByClassName('customVariables')[1].prepend(fillContainer);
-                  // document.getElementById('Stage.helm_deploy.Variables').prepend(fillContainer);
                   document.getElementById('iherb-fill-container').setAttribute('style','display:block;')
 
                   const fillButton = document.createElement("button");
@@ -137,7 +133,6 @@
                       document.getElementById('iherb-fill-input').value='wrong version';
                     }
                   });
-
                   const fillInput = document.createElement("input");
                   fillInput.setAttribute('id','iherb-fill-input');
                   fillInput.setAttribute('type','text');
@@ -160,7 +155,6 @@
       run(url);
       pushState.apply(this, arguments);
     };
-
     window.history.replaceState = function(state, unused, url) {
       run(url);
       replaceState.apply(this, arguments);
