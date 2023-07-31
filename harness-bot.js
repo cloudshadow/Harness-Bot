@@ -21,7 +21,7 @@
 
 (function() {
   'use strict';
-  const environments = ['la-test']
+  const environments = ['']
   const servicesName = [''];
   const dryRun = 'false';
   const verify = 'false';
@@ -136,7 +136,7 @@
                   const fillInput = document.createElement("input");
                   fillInput.setAttribute('id','iherb-fill-input');
                   fillInput.setAttribute('type','text');
-                  fillInput.setAttribute('placeholder','version EX: 0.0.1');
+                  fillInput.setAttribute('placeholder','version e.g.: 0.0.1');
                   fillInput.setAttribute('style','height:32px; width: 120px;');
                   fillInput.setAttribute('name','template.templateInputs.stages[0].stage.spec.services.values[0].serviceInputs.serviceDefinition.spec.manifests[0].manifest.spec.chartVersion');
                   fillContainer.prepend(fillInput);
